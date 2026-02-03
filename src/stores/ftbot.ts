@@ -40,6 +40,10 @@ import type {
   PairHistory,
   PairHistoryPayload,
   PairIntervalTuple,
+  PlaybackControlPayload,
+  PlaybackInitPayload,
+  PlaybackResponse,
+  PlaybackStateParams,
   PairlistEvalResponse,
   PairlistsPayload,
   PairlistsResponse,
@@ -455,6 +459,78 @@ export function createBotSubStore(botId: string, botName: string) {
         return new Promise((resolve, reject) => {
           reject(error);
         });
+      },
+      applyPlaybackResponse(response: PlaybackResponse, timerange?: string) {
+        const historyKey = `${response.data.pair}__${response.data.timeframe}`;
+        const existing = this.history[historyKey];
+        const resolvedTimerange = timerange ?? existing?.timerange ?? '';
+
+        this.history = {
+          ...this.history,
+          [historyKey]: {
+            pair: response.data.pair,
+            timeframe: response.data.timeframe,
+            timerange: resolvedTimerange,
+            data: response.data,
+          },
+        };
+        this.historyStatus = LoadingStatus.success;
+      },
+      async playbackInit(payload: PlaybackInitPayload) {
+        if (!payload.pair || !payload.timeframe) {
+          const error = 'pair or timeframe not specified';
+          console.error(error);
+          return Promise.reject(error);
+        }
+        this.historyStatus = LoadingStatus.loading;
+        this.historyTakesLonger = false;
+        try {
+          const { data } = await api.post<PlaybackInitPayload, AxiosResponse<PlaybackResponse>>(
+            '/playback/init',
+            payload,
+          );
+          this.applyPlaybackResponse(data, payload.timerange);
+          return data;
+        } catch (err) {
+          console.error(err);
+          this.historyStatus = LoadingStatus.error;
+          if (axios.isAxiosError(err)) {
+            const errMsg = err.response?.data?.detail ?? 'Error initializing playback';
+            showAlert(errMsg, 'error');
+          }
+          return Promise.reject(err);
+        }
+      },
+      async playbackControl(payload: PlaybackControlPayload) {
+        try {
+          const { data } = await api.post<PlaybackControlPayload, AxiosResponse<PlaybackResponse>>(
+            '/playback/control',
+            payload,
+          );
+          this.applyPlaybackResponse(data);
+          return data;
+        } catch (err) {
+          console.error(err);
+          if (axios.isAxiosError(err)) {
+            const errMsg = err.response?.data?.detail ?? 'Error controlling playback';
+            showAlert(errMsg, 'error');
+          }
+          return Promise.reject(err);
+        }
+      },
+      async playbackState(params: PlaybackStateParams = {}) {
+        try {
+          const { data } = await api.get<PlaybackResponse>('/playback/state', { params });
+          this.applyPlaybackResponse(data);
+          return data;
+        } catch (err) {
+          console.error(err);
+          if (axios.isAxiosError(err)) {
+            const errMsg = err.response?.data?.detail ?? 'Error reading playback state';
+            showAlert(errMsg, 'error');
+          }
+          return Promise.reject(err);
+        }
       },
       async getStrategyPlotConfig(): Promise<PlotConfig | undefined> {
         try {

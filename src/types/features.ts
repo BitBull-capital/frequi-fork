@@ -31,7 +31,10 @@ export type FeatureKey =
   | 'downloadDataView'
   | 'pairlistConfig'
   | 'downloadDataCandleTypes'
-  | 'forceExitWithPrice';
+  | 'forceExitWithPrice'
+  | 'downloadDataPrepend'
+  | 'strategyParameters'
+  | 'walletChange';
 
 export type BotFeatures = Record<FeatureKey, boolean>;
 
@@ -71,4 +74,7 @@ export const FEATURES: Record<FeatureKey, FeatureConfig> = {
     description: 'Candle type selection for data download',
   },
   forceExitWithPrice: { minVersion: 2.45, description: 'Force exit accepting price parameter' },
+  downloadDataPrepend: { minVersion: 2.46, description: 'Prepend data when downloading' },
+  strategyParameters: { minVersion: 2.47, description: 'Strategy parameters' },
+  walletChange: { minVersion: 2.48, description: 'Wallet change data endpoint' },
 };

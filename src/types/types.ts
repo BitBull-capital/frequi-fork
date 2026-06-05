@@ -150,6 +150,7 @@ export interface BotState {
   unfilledtimeout: UnfilledTimeout;
   order_types: OrderTypes;
   exchange: string;
+  demo_trading?: boolean;
   force_entry_enable?: boolean;
   max_open_trades: number;
   minimal_roi: object;
@@ -176,18 +177,6 @@ export interface BotState {
 
   position_adjustment_enable?: boolean;
   max_entry_position_adjustment?: number;
-}
-
-export interface StrategyListResult {
-  strategies: string[];
-}
-
-export interface StrategyResult {
-  /** Strategy name */
-  strategy: string;
-  /** Code of the strategy class */
-  code: string;
-  timeframe: string;
 }
 
 export interface FreqAIModelListResult {

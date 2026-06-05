@@ -1,14 +1,16 @@
 version: 2
 updates:
-- package-ecosystem: docker
+- package-ecosystem: docker # zizmor: ignore[dependabot-cooldown] Docker does not support cooldowns at the moment.
   directories:
     - "/"
     - "/.devcontainer/"
     - "/docker/"
-  cooldown:
-    default-days: 7
-    exclude:
-      - "vscode/devcontainers/typescript-node"
+  # Docker does not support cooldown at the moment.
+  # https://github.com/dependabot/dependabot-core/issues/14044
+  # cooldown:
+  #   default-days: 7
+  #   exclude:
+  #     - "vscode/devcontainers/typescript-node"
   schedule:
     interval: "cron"
     # Daily at 2 AM
@@ -33,7 +35,8 @@ updates:
   schedule:
     interval: "cron"
     # Wednesday
-    cronjob: "0 2 * * 3"
+    cronjob: "25 1 * * 3"
+    timezone: "UTC"
   open-pull-requests-limit: 20
   target-branch: main
   groups:

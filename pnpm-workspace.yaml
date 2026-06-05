@@ -1,7 +1,16 @@
 # 7 days
 minimumReleaseAge: 10080
-onlyBuiltDependencies:
-  - "@parcel/watcher"
-  - "@tailwindcss/oxide"
-  - "esbuild"
-  - "vue-demi"
+minimumReleaseAgeExclude:
+  - "@nuxt/ui"
+  - "js-cookie@3.0.7"
+blockExoticSubdeps: true
+# trustPolicy: no-downgrade
+preferFrozenLockfile: true
+allowBuilds:
+  '@parcel/watcher': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  vue-demi: true
+
+overrides:
+  "js-cookie@3": "3.0.7"
